@@ -1,18 +1,8 @@
-/**
- * Generates a rich, city-wide explore dataset from the real Places API and
- * writes it to src/data/explore.json (consumed by exploreService).
- *
- * Run once, with a key:
- *   GOOGLE_PLACES_KEY=... npx tsx scripts/buildExplore.ts
- *
- * It queries many categories across Zürich neighbourhoods so POIs are spread
- * across the whole city, dedupes by place id, and keeps a thumbnail + blurb.
- */
 import "dotenv/config";
 
-import { writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
-import { dirname, join } from "node:path";
+import {writeFile} from "node:fs/promises";
+import {fileURLToPath} from "node:url";
+import {dirname, join} from "node:path";
 
 import {Place} from "../src/types/map.types";
 
@@ -22,7 +12,7 @@ if (!KEY) {
     process.exit(1);
 }
 
-const ANCHOR = { latitude: 47.3769, longitude: 8.5417 };
+const ANCHOR = {latitude: 47.3769, longitude: 8.5417};
 
 // Spread across the city: pair categories with neighbourhoods/areas.
 const QUERIES = [
@@ -48,7 +38,7 @@ async function search(query: string): Promise<Place[]> {
         },
         body: JSON.stringify({
             textQuery: query,
-            locationBias: { circle: { center: ANCHOR, radius: 7000 } },
+            locationBias: {circle: {center: ANCHOR, radius: 7000}},
             maxResultCount: 6,
         }),
     });
@@ -77,7 +67,7 @@ async function main() {
         process.stdout.write(`Fetching: ${q}\n`);
         const places = await search(q);
         for (const p of places) if (!byId.has(p.id)) byId.set(p.id, p);
-        await new Promise((r) => setTimeout(r, 200)); // gentle pacing
+        await new Promise((r) => setTimeout(r, 200));
     }
 
     const all = [...byId.values()];
@@ -87,11 +77,12 @@ async function main() {
     console.log(`\n✅ Wrote ${all.length} POIs to ${out}`);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+});
 
-/**
- * Maps granular Google Places primaryTypes to a broad, user-friendly category.
- */
+
 function coarseCategory(primaryType: string | undefined): string {
     if (!primaryType) return "other";
 

@@ -96,7 +96,6 @@ export async function resolveMessages(raw: RawGuideMessage[]): Promise<ChatMessa
         }
     }
 
-    // Never return nothing — keep the conversation alive.
     if (!out.length) out.push({...base("host"), kind: "text", text: "Sorry, could you rephrase that?"});
     return out;
 }
