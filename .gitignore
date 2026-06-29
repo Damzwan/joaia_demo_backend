@@ -13,3 +13,4 @@ coverage
 benchmarks/graphs
 
 .env
+data/explore.json
