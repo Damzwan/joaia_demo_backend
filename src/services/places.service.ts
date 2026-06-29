@@ -1,7 +1,7 @@
-import { GOOGLE_PLACES_KEY, ANCHOR } from "../config/env";
-import { getGoogleHeaders, mapSearchResult, photoUrl, seedMatch, seedSearchMany } from "../helpers/places.helper";
-import { SEED } from "../config/places.config";
-import { Place, PlaceDetails } from "../types/map.types";
+import {GOOGLE_PLACES_KEY, ANCHOR} from "../config/env";
+import {getGoogleHeaders, mapSearchResult, photoUrl, seedMatch, seedSearchMany} from "../helpers/places.helper";
+import {SEED} from "../config/places.config";
+import {Place, PlaceDetails} from "../types/map.types";
 
 const SEARCH_URL = "https://places.googleapis.com/v1/places:searchText";
 const PLACE_URL = "https://places.googleapis.com/v1/places";
@@ -10,9 +10,8 @@ export const placesService = {
     async search(query: string, lat?: number, lng?: number): Promise<Place | null> {
         if (!GOOGLE_PLACES_KEY) return seedMatch(query);
 
-        // Determine the location center bias (fallback to fallback config constant)
         const center = (lat !== undefined && lng !== undefined)
-            ? { latitude: lat, longitude: lng }
+            ? {latitude: lat, longitude: lng}
             : ANCHOR;
 
         try {
@@ -21,7 +20,7 @@ export const placesService = {
                 headers: getGoogleHeaders("places.id,places.displayName,places.location,places.rating,places.formattedAddress,places.primaryType,places.photos"),
                 body: JSON.stringify({
                     textQuery: `${query} Zurich`,
-                    locationBias: { circle: { center, radius: 5000 } },
+                    locationBias: {circle: {center, radius: 5000}},
                     maxResultCount: 1,
                 }),
             });
@@ -42,7 +41,7 @@ export const placesService = {
 
         // Determine the location center bias dynamically based on frontend user viewport position
         const center = (lat !== undefined && lng !== undefined)
-            ? { latitude: lat, longitude: lng }
+            ? {latitude: lat, longitude: lng}
             : ANCHOR;
 
         try {
@@ -51,7 +50,7 @@ export const placesService = {
                 headers: getGoogleHeaders("places.id,places.displayName,places.location,places.rating,places.formattedAddress,places.primaryType,places.photos"),
                 body: JSON.stringify({
                     textQuery: `${query} Zurich`,
-                    locationBias: { circle: { center, radius: 5000 } },
+                    locationBias: {circle: {center, radius: 5000}},
                     maxResultCount: limit,
                 }),
             });
@@ -84,7 +83,7 @@ export const placesService = {
     async getDetails(placeId: string): Promise<PlaceDetails> {
         if (placeId.startsWith("seed-") || !GOOGLE_PLACES_KEY) {
             const seed = SEED.find((p) => p.id === placeId) ?? SEED[0];
-            return { ...seed, openNow: true, description: seed.note };
+            return {...seed, openNow: true, description: seed.note};
         }
 
         const res = await fetch(`${PLACE_URL}/${encodeURIComponent(placeId)}`, {
